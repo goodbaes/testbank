@@ -31,13 +31,12 @@ class _CalendarWidgetState extends State<CalendarWidget> {
   DateTime dayAfterHolyDays() {
     var payDay = DateTime(focusedDay.year, focusedDay.month, widget.payDay);
 
-    if (widget.workDays.contains(payDay)) {
-      return payDay;
-    }
-
     while (widget.holyDays.contains(payDay) ||
         payDay.weekday == 7 ||
         payDay.weekday == 6) {
+      if (widget.workDays.contains(payDay)) {
+        break;
+      }
       payDay = payDay.add(const Duration(days: 1));
     }
 
