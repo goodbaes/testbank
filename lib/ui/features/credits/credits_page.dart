@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:get_it/get_it.dart';
-import 'package:testbank/bloc/credits_bloc/credits_bloc.dart';
+import 'package:flutter_redux/flutter_redux.dart';
+import 'package:testbank/redux/store/app.state.dart';
 import 'package:testbank/ui/features/credits/widgets/list.dart';
 
 class CreditsPage extends StatelessWidget {
@@ -14,19 +13,18 @@ class CreditsPage extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Кредиты'),
       ),
-      body: BlocProvider(
-        create: (context) => CreditsBloc(GetIt.I.get()),
-        child: BlocBuilder<CreditsBloc, CreditsState>(
-          builder: (context, state) {
-            return state.when(
-              initial: () => const SizedBox(),
-              loading: () => const Center(
-                  child: CircularProgressIndicator(color: Colors.amber)),
-              loaded: (credits) => CreditsList(credits),
-              error: () => const SizedBox(),
-            );
-          },
-        ),
+      body: StoreBuilder<AppState>(
+        builder: (context, state) {
+          var creditState = state.state.creditsState;
+          if (creditState.loading) {
+            return const Center(
+                child: CircularProgressIndicator(color: Colors.amber));
+          } else if (creditState.credits.isNotEmpty) {
+            return CreditsList(creditState.credits);
+          } else {
+            return const SizedBox();
+          }
+        },
       ),
     ));
   }
